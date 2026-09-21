@@ -1,7 +1,14 @@
 [
     {
         "id": 1,
-        "name": "qwe",
-        "age": 12
+        "name": "йцу",
+        "gpa": 123.0,
+        "skills": []
+    },
+    {
+        "id": 2,
+        "name": "tolik",
+        "gpa": 4.1,
+        "skills": []
     }
 ]

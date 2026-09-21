@@ -1,49 +1,95 @@
-from storage import load_data, save_data
-from students import add_student, find_student
-from projects import add_project, get_student_projects
-from utils import input_int
+from models import Student, Project
+from storage import load_students, save_students, load_projects, save_projects
+from utils import input_int, input_float
 
 STUDENTS_FILE = "data/students.json"
 PROJECTS_FILE = "data/projects.json"
 
 def main() -> None:
-    """Точка запуска приложения."""
-    students = load_data(STUDENTS_FILE)
-    projects = load_data(PROJECTS_FILE)
+    students = load_students(STUDENTS_FILE)
+    projects = load_projects(PROJECTS_FILE, students)
 
     while True:
         print("\n=== Сервис портфолио студентов ===")
         print("1. Добавить студента")
-        print("2. Найти студента")
-        print("3. Добавить проект в портфолио")
-        print("4. Показать проекты студента")
-        print("0. Выход")
+        print("2. Добавить навык студенту и проверить профиль")
+        print("3. Добавить проект")
+        print("4. Изменить и проверить статус проекта")
+        print("5. Рассчитать рейтинг студента")
+        print("6. Показать все данные")
+        print("0. Выход и сохранение")
 
-        choice = input_int("Выберите действие: ")
+        choice = input("Выберите действие: ")
 
-        if choice == 1:
+        if choice == "1":
             name = input("Имя студента: ")
-            age = input_int("Возраст: ")
-            add_student(students, name, age)
-            save_data(STUDENTS_FILE, students)
+            gpa = input_float("Средний балл (GPA): ")
+            new_id = len(students) + 1
+            students.append(Student(new_id, name, gpa))
+
+            save_students(STUDENTS_FILE, students)
             print("Студент добавлен.")
-        elif choice == 2:
-            query = input("Введите имя для поиска: ")
-            found = find_student(students, query)
-            for s in found:
-                print(f"[{s['id']}] {s['name']} (Возраст: {s['age']})")
-        elif choice == 3:
+
+        elif choice == "2":
             student_id = input_int("ID студента: ")
-            title = input("Название проекта: ")
-            add_project(projects, student_id, title)
-            save_data(PROJECTS_FILE, projects)
-            print("Проект добавлен.")
-        elif choice == 4:
+            student = next((s for s in students if s.id == student_id), None)
+            if student:
+                skill = input("Введите новый навык: ")
+                student.skills.append(skill)
+
+                print(student.check_profile_completion())
+            else:
+                print("Студент не найден.")
+
+        elif choice == "3":
             student_id = input_int("ID студента: ")
-            student_projects = get_student_projects(projects, student_id)
-            for p in student_projects:
-                print(f"- {p['title']} [{p['status']}]")
-        elif choice == 0:
+            student = next((s for s in students if s.id == student_id), None)
+            if student:
+                title = input("Название проекта: ")
+                new_id = len(projects) + 1
+                projects.append(Project(new_id, title, student))
+
+                save_projects(PROJECTS_FILE, projects)
+                print("Проект добавлен.")
+            else:
+                print("Студент не найден.")
+
+        elif choice == "4":
+            project_id = input_int("ID проекта: ")
+            project = next((p for p in projects if p.id == project_id), None)
+            if project:
+                print(f"Доступные статусы: В разработке, Завершен, Планируется")
+                new_status = input("Новый статус: ")
+                project.update_status(new_status)
+                # Вызов Функции 2 из README
+                print(project.get_status_info())
+            else:
+                print("Проект не найден.")
+
+        elif choice == "5":
+            student_id = input_int("ID студента: ")
+            student = next((s for s in students if s.id == student_id), None)
+            if student:
+                # Считаем проекты именно этого студента
+                student_projects_count = sum(1 for p in projects if p.student.id == student.id)
+                # Вызов Функции 3 из README
+                rating = student.calculate_rating(student_projects_count)
+                print(f"Предварительный рейтинг студента {student.name}: {rating}")
+            else:
+                print("Студент не найден.")
+
+        elif choice == "6":
+            print("\n--- Студенты ---")
+            for s in students:
+                print(s)
+            print("\n--- Проекты ---")
+            for p in projects:
+                print(p)
+
+        elif choice == "0":
+            save_students(STUDENTS_FILE, students)
+            save_projects(PROJECTS_FILE, projects)
+            print("Данные сохранены. Выход.")
             break
 
 if __name__ == "__main__":

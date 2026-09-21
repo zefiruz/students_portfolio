@@ -1,7 +1,20 @@
 [
     {
-        "student_id": 1,
-        "title": "asdfgh",
-        "status": "В разработке"
+        "id": 1,
+        "title": "фывфыв",
+        "status": "В разработке",
+        "student_id": 1
+    },
+    {
+        "id": 2,
+        "title": "йцу",
+        "status": "Завершен",
+        "student_id": 1
+    },
+    {
+        "id": 3,
+        "title": "туду лист",
+        "status": "Завершен",
+        "student_id": 2
     }
 ]
