@@ -5,6 +5,7 @@ from utils import input_int, input_float
 STUDENTS_FILE = "data/students.json"
 PROJECTS_FILE = "data/projects.json"
 
+
 def main() -> None:
     students = load_students(STUDENTS_FILE)
     projects = load_projects(PROJECTS_FILE, students)
@@ -37,6 +38,7 @@ def main() -> None:
                 skill = input("Введите новый навык: ")
                 student.skills.append(skill)
 
+                # Проверка полноты заполнения профиля студента.
                 print(student.check_profile_completion())
             else:
                 print("Студент не найден.")
@@ -61,7 +63,7 @@ def main() -> None:
                 print(f"Доступные статусы: В разработке, Завершен, Планируется")
                 new_status = input("Новый статус: ")
                 project.update_status(new_status)
-                # Вызов Функции 2 из README
+                # Определение текущего статуса проекта.
                 print(project.get_status_info())
             else:
                 print("Проект не найден.")
@@ -71,8 +73,10 @@ def main() -> None:
             student = next((s for s in students if s.id == student_id), None)
             if student:
                 # Считаем проекты именно этого студента
-                student_projects_count = sum(1 for p in projects if p.student.id == student.id)
-                # Вызов Функции 3 из README
+                student_projects_count = sum(
+                    1 for p in projects if p.student.id == student.id
+                )
+                # Расчет предварительного рейтинга студента на основе количества проектов и среднего балла.
                 rating = student.calculate_rating(student_projects_count)
                 print(f"Предварительный рейтинг студента {student.name}: {rating}")
             else:
@@ -91,6 +95,7 @@ def main() -> None:
             save_projects(PROJECTS_FILE, projects)
             print("Данные сохранены. Выход.")
             break
+
 
 if __name__ == "__main__":
     main()

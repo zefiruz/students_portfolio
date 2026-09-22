@@ -1,9 +1,16 @@
 from models.student import Student
 
+
 class Project:
     """Учебный или профессиональный проект в портфолио."""
-    
-    def __init__(self, project_id: int, title: str, student: Student, status: str = "В разработке") -> None:
+
+    def __init__(
+        self,
+        project_id: int,
+        title: str,
+        student: Student,
+        status: str = "В разработке",
+    ) -> None:
         self.id = project_id
         self.title = title
         self.student = student
@@ -19,7 +26,9 @@ class Project:
         if new_status in valid_statuses:
             self.status = new_status
         else:
-            print(f"Недопустимый статус. Доступные статусы: {', '.join(valid_statuses)}")
+            print(
+                f"Недопустимый статус. Доступные статусы: {', '.join(valid_statuses)}"
+            )
 
     def __str__(self) -> str:
         return f"Проект '{self.title}' [{self.status}] (Автор: {self.student.name})"
