@@ -1,4 +1,5 @@
-from models import Student, Project
+from models import Student, Project, Achievement, Document
+from datetime import date
 
 # student
 
@@ -72,3 +73,53 @@ def test_project_str():
     
     expected_str = "Проект 'API Сервис' [Планируется] (Автор: Илья)"
     assert str(project) == expected_str
+
+def test_achievement_linking():
+    student = Student(1, "Иван", 4.5)
+    achieve = Achievement(1, "Победитель олимпиады", date(2026, 10, 5), student, "Олимпиада")
+    
+    assert achieve.student is student
+    assert achieve.student.name == "Иван"
+
+def test_achievement_is_recent():
+    student = Student(1, "Иван", 4.5)
+    achieve = Achievement(1, "Хакатон", date(2026, 5, 12), student, "IT")
+    
+    assert achieve.is_recent(2026) is True
+    assert achieve.is_recent(2025) is False
+
+def test_achievement_str():
+    student = Student(1, "Иван", 4.5)
+    achieve = Achievement(1, "Хакатон", date(2026, 5, 12), student, "IT")
+    
+    expected_str = "[IT] Достижение 'Хакатон' (Студент: Иван)"
+    assert str(achieve) == expected_str
+
+def test_document_linking():
+    student = Student(1, "Мария", 4.0)
+    doc = Document(1, "Скан паспорта", "passport.jpg", student)
+    
+    assert doc.owner is student
+    assert doc.owner.name == "Мария"
+
+def test_document_extension_parsing():
+    student = Student(1, "Мария", 4.0)
+    
+    # Проверка стандартного расширения
+    doc_pdf = Document(1, "Справка", "spravka.pdf", student)
+    assert doc_pdf.extension == "pdf"
+    
+    # Проверка приведения к нижнему регистру
+    doc_png = Document(2, "Скан", "scan.PNG", student)
+    assert doc_png.extension == "png"
+    
+    # Проверка файла без расширения
+    doc_none = Document(3, "Архив", "just_file", student)
+    assert doc_none.extension == "неизвестно"
+
+def test_document_str():
+    student = Student(1, "Мария", 4.0)
+    doc = Document(1, "Справка", "spravka.pdf", student)
+    
+    expected_str = "Документ: Справка (Формат: .pdf) — Владелец: Мария"
+    assert str(doc) == expected_str
