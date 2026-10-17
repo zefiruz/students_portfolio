@@ -1,14 +1,11 @@
 from models.student import Student
 
+
 class Document:
     """Электронный документ (скан, справка, отчет), прикрепленный к профилю."""
 
     def __init__(
-        self,
-        document_id: int,
-        title: str,
-        file_path: str,
-        owner: Student
+        self, document_id: int, title: str, file_path: str, owner: Student
     ) -> None:
         """Создать объект документа."""
         self.id = document_id

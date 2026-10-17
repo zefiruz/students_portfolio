@@ -17,7 +17,9 @@ class Student:
         if not self.skills:
             return "Профиль пуст: необходимо добавить хотя бы один навык."
         elif len(self.skills) < 3:
-            return "Профиль заполнен частично (рекомендуется добавить минимум 3 навыка)."
+            return (
+                "Профиль заполнен частично (рекомендуется добавить минимум 3 навыка)."
+            )
         return "Профиль отлично заполнен!"
 
     def calculate_rating(self, projects_count: int) -> float:
