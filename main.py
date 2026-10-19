@@ -155,7 +155,9 @@ def main() -> None:
                     save_achievements(ACHIEVEMENTS_FILE, achievements)
                     print("Достижение добавлено.")
                 except ValueError:
-                    print("Ошибка: Неверный формат даты. Используйте ДД-ММ-ГГГГ.")
+                    print(
+                        "Ошибка: Неверный формат даты. Используйте ДД-ММ-ГГГГ."
+                    )
             else:
                 print("Студент не найден.")
 

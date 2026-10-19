@@ -1,0 +1,7 @@
+{% if project.status == "Завершен" %}
+    <span class="badge bg-success status-badge">Завершен</span>
+{% elif project.status == "В разработке" %}
+    <span class="badge bg-primary status-badge">В разработке</span>
+{% else %}
+    <span class="badge bg-secondary status-badge">{{ project.status }}</span>
+{% endif %}

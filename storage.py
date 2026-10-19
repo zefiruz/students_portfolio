@@ -168,4 +168,4 @@ def save_documents(filename: str, documents: list) -> None:
             }
             for d in documents
         ]
-        json.dump(data, f, ensure_ascii=False, indent=4)
+        json.dump(data, f, ensure_ascii=False, indent=4)

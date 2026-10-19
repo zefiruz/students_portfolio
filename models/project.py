@@ -27,8 +27,12 @@ class Project:
             self.status = new_status
         else:
             print(
-                f"Недопустимый статус. Доступные статусы: {', '.join(valid_statuses)}"
+                "Недопустимый статус. "
+                f"Доступные статусы: {', '.join(valid_statuses)}"
             )
 
     def __str__(self) -> str:
-        return f"Проект '{self.title}' [{self.status}] (Автор: {self.student.name})"
+        return (
+            f"Проект '{self.title}' [{self.status}] "
+            f"(Автор: {self.student.name})"
+        )

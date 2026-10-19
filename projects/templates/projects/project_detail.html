@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {% if project %}{{ project.title }} — Проект{% else %}Проект не найден{% endif %}
+{% endblock %}
+
+{% block content %}
+{% if project %}
+    <div class="card custom-card">
+        <div class="card-body">
+            <h2 class="card-title">{{ project.title }}</h2>
+            <p class="card-text">
+                <strong>Статус:</strong>
+                {% include "projects/includes/project_status.html" %}
+            </p>
+            <p class="card-text">
+                <strong>Автор проекта:</strong>
+                <a href="{% url 'students:detail' project.student_id %}">
+                    {{ project.student_name }}
+                </a>
+            </p>
+            <a href="{% url 'projects:list' %}" class="btn btn-outline-secondary">К списку проектов</a>
+        </div>
+    </div>
+{% else %}
+    <div class="alert alert-danger">
+        <h3>Проект не найден</h3>
+        <p>Проект с указанным ID отсутствует.</p>
+        <a href="{% url 'projects:list' %}" class="btn btn-outline-danger">К списку проектов</a>
+    </div>
+{% endif %}
+{% endblock %}

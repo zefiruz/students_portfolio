@@ -22,4 +22,7 @@ class Document:
 
     def __str__(self) -> str:
         """Вернуть строковое представление документа."""
-        return f"Документ: {self.title} (Формат: .{self.extension}) — Владелец: {self.owner.name}"
+        return (
+            f"Документ: {self.title} (Формат: .{self.extension}) — "
+            f"Владелец: {self.owner.name}"
+        )

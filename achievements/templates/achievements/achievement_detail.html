@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {% if ach %}{{ ach.title }} — Достижение{% else %}Достижение не найдено{% endif %}
+{% endblock %}
+
+{% block content %}
+{% if ach %}
+    <div class="card custom-card">
+        <div class="card-body">
+            <h2 class="card-title">[{{ ach.category }}] {{ ach.title }}</h2>
+            <p class="card-text mt-3">
+                <strong>Дата получения:</strong> {{ ach.issue_date }}
+            </p>
+            <p class="card-text">
+                <strong>Студент:</strong>
+                <a href="{% url 'students:detail' ach.student_id %}">
+                    {{ ach.student_name }}
+                </a>
+            </p>
+
+            {% if ach.doc_title %}
+                <div class="alert alert-success mt-3">
+                    <strong>Подтверждающий документ:</strong> {{ ach.doc_title }}
+                    <br>
+                    <small class="text-muted">
+                        Файл: <code>{{ ach.doc_file }}</code>
+                    </small>
+                </div>
+            {% else %}
+                <p class="text-muted mt-3">Подтверждающий документ не прикреплен.</p>
+            {% endif %}
+
+            <div class="mt-4">
+                <a href="{% url 'achievements:list' %}" class="btn btn-outline-secondary">
+                    К списку достижений
+                </a>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <div class="alert alert-danger">
+        <h3>Достижение не найдено</h3>
+        <p>Достижение с указанным ID отсутствует в системе.</p>
+        <a href="{% url 'achievements:list' %}" class="btn btn-outline-danger">К списку достижений</a>
+    </div>
+{% endif %}
+{% endblock %}

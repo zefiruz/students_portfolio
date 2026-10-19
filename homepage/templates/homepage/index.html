@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Главная — Сервис Портфолио{% endblock %}
+
+{% block content %}
+<div class="p-5 mb-4 bg-light rounded-3">
+    <div class="container-fluid py-3">
+        <h1 class="display-5 fw-bold">Сервис Портфолио Студентов</h1>
+        <p class="col-md-8 fs-4">
+            Единая система учета академических результатов, выполненных проектов и призовых достижений.
+        </p>
+        <div class="mt-4">
+            <a href="{% url 'students:list' %}" class="btn btn-primary btn-lg me-2">Список студентов</a>
+            <a href="{% url 'projects:list' %}" class="btn btn-secondary btn-lg me-2">Все проекты</a>
+            <a href="{% url 'achievements:list' %}" class="btn btn-info btn-lg">Достижения</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

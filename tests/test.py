@@ -1,4 +1,5 @@
 from datetime import date
+import json
 
 from models import Achievement, Document, Project, Student
 from storage import (
@@ -82,15 +83,25 @@ def test_project_status_update_valid():
     assert project.status == "В разработке"
     project.update_status("Завершен")
     assert project.status == "Завершен"
-    assert "Завершен" in project.get_status_info()
 
 
 def test_project_status_update_invalid():
     student = Student(1, "Петр", 3.8)
     project = Project(1, "Telegram Бот", student)
 
-    project.update_status("Сломался")
+    project.update_status("Недопустимый статус")
     assert project.status == "В разработке"
+
+
+def test_project_get_status_info_all_variants():
+    student = Student(1, "Петр", 3.8)
+    p1 = Project(1, "А", student, "В разработке")
+    p2 = Project(2, "Б", student, "Завершен")
+    p3 = Project(3, "В", student, "Планируется")
+
+    assert "В разработке" in p1.get_status_info()
+    assert "Завершен" in p2.get_status_info()
+    assert "Планируется" in p3.get_status_info()
 
 
 def test_project_str():
@@ -181,6 +192,7 @@ def test_achievement_is_recent():
 
     assert achieve.is_recent(2026) is True
     assert achieve.is_recent(2025) is False
+    assert achieve.is_recent(2027) is False
 
 
 def test_achievement_str_without_document():
@@ -241,13 +253,26 @@ def test_storage_projects_save_and_load(tmp_path):
     ]
 
     save_projects(filepath, original)
-    # При загрузке восстанавливается ссылка на объект Student
     loaded = load_projects(filepath, [student])
 
     assert len(loaded) == 1
     assert loaded[0].title == "Портфолио"
     assert loaded[0].student is student
     assert loaded[0].student.name == "Анна"
+
+
+def test_storage_projects_orphan_filtered(tmp_path):
+    # Если проект ссылается на отсутствующего студента, он не загружается
+    filepath = str(tmp_path / "projects_orphan.json")
+    with open(filepath, "w", encoding="utf-8") as f:
+        json.dump(
+            [{"id": 1, "title": "Бот", "status": "В разработке",
+              "student_id": 999}],
+            f,
+        )
+
+    loaded = load_projects(filepath, [])
+    assert loaded == []
 
 
 def test_storage_documents_save_and_load(tmp_path):
@@ -258,7 +283,6 @@ def test_storage_documents_save_and_load(tmp_path):
     ]
 
     save_documents(filepath, original)
-    # При загрузке восстанавливается владелец owner
     loaded = load_documents(filepath, [student])
 
     assert len(loaded) == 1
@@ -292,27 +316,66 @@ def test_storage_achievements_save_and_load_with_relations(tmp_path):
     ]
 
     save_achievements(filepath, original)
-    # При загрузке восстанавливаются связи со Student и Document
     loaded = load_achievements(filepath, [student], [doc])
 
     assert len(loaded) == 2
-
-    # Первое достижение связано с документом
     assert loaded[0].id == 1
     assert loaded[0].student is student
     assert loaded[0].document is doc
     assert loaded[0].document.file_path == "award.png"
 
-    # Второе достижение без документа
     assert loaded[1].id == 2
     assert loaded[1].student is student
     assert loaded[1].document is None
 
 
-def test_storage_missing_and_empty_files(tmp_path):
+def test_storage_achievements_iso_and_custom_dates(tmp_path):
+    # Проверка чтения обоих форматов даты (ДД-ММ-ГГГГ и ГГГГ-ММ-ДД)
+    filepath = str(tmp_path / "achievements_dates.json")
+    student = Student(1, "Анна", 4.5)
+    data = [
+        {
+            "id": 1,
+            "title": "Олимпиада",
+            "issue_date": "15-05-2026",
+            "student_id": 1,
+            "category": "IT",
+            "document_id": None,
+        },
+        {
+            "id": 2,
+            "title": "Конкурс",
+            "issue_date": "2026-11-20",
+            "student_id": 1,
+            "category": "Наука",
+            "document_id": None,
+        },
+    ]
+    with open(filepath, "w", encoding="utf-8") as f:
+        json.dump(data, f)
+
+    loaded = load_achievements(filepath, [student], [])
+    assert len(loaded) == 2
+    assert loaded[0].issue_date == date(2026, 5, 15)
+    assert loaded[1].issue_date == date(2026, 11, 20)
+
+
+def test_storage_missing_files(tmp_path):
     missing_file = str(tmp_path / "nonexistent.json")
 
     assert load_students(missing_file) == []
     assert load_projects(missing_file, []) == []
     assert load_documents(missing_file, []) == []
     assert load_achievements(missing_file, [], []) == []
+
+
+def test_storage_corrupted_json_files(tmp_path):
+    # Проверка устойчивости к некорректному/битому синтаксису JSON
+    corrupted_file = str(tmp_path / "corrupted.json")
+    with open(corrupted_file, "w", encoding="utf-8") as f:
+        f.write("{invalid_json: true,}")
+
+    assert load_students(corrupted_file) == []
+    assert load_projects(corrupted_file, []) == []
+    assert load_documents(corrupted_file, []) == []
+    assert load_achievements(corrupted_file, [], []) == []
