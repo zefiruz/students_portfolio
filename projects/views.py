@@ -1,10 +1,23 @@
 from django.shortcuts import render
-from storage import load_projects, load_students
+from db.database import get_connection
 
 
 def projects_list(request):
-    students = load_students("data/students.json")
-    projects = load_projects("data/projects.json", students)
+    conn = get_connection()
+    projects = conn.execute(
+        """
+        SELECT
+            p.id,
+            p.title,
+            p.status,
+            s.id AS student_id,
+            s.name AS student_name
+        FROM projects p
+        JOIN students s ON p.student_id = s.id
+        ORDER BY p.title;
+        """
+    ).fetchall()
+    conn.close()
     return render(
         request,
         "projects/project_list.html",
@@ -13,9 +26,22 @@ def projects_list(request):
 
 
 def project_detail(request, project_id):
-    students = load_students("data/students.json")
-    projects = load_projects("data/projects.json", students)
-    project = next((p for p in projects if p.id == project_id), None)
+    conn = get_connection()
+    project = conn.execute(
+        """
+        SELECT
+            p.id,
+            p.title,
+            p.status,
+            s.id AS student_id,
+            s.name AS student_name
+        FROM projects p
+        JOIN students s ON p.student_id = s.id
+        WHERE p.id = ?;
+        """,
+        (project_id,),
+    ).fetchone()
+    conn.close()
 
     if project is None:
         return render(
@@ -29,4 +55,4 @@ def project_detail(request, project_id):
         request,
         "projects/project_detail.html",
         {"project": project},
-    )
+    )

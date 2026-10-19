@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Статистика — Портфолио{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Аналитическая статистика</h1>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-center bg-light p-3">
+            <h3>{{ summary.total_students }}</h3>
+            <p class="text-muted mb-0">Всего студентов</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center bg-light p-3">
+            <h3>{{ summary.avg_gpa }}</h3>
+            <p class="text-muted mb-0">Средний балл (AVG)</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center bg-light p-3">
+            <h3>{{ summary.max_gpa }}</h3>
+            <p class="text-muted mb-0">Максимальный GPA</p>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header fw-bold">Проектов у студентов</div>
+            <ul class="list-group list-group-flush">
+                {% for item in student_projects %}
+                    <li class="list-group-item d-flex justify-content-between">
+                        {{ item.name }}
+                        <span class="badge bg-primary rounded-pill">{{ item.p_count }}</span>
+                    </li>
+                {% empty %}
+                    <li class="list-group-item text-muted">Нет данных</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header fw-bold">Достижения по категориям</div>
+            <ul class="list-group list-group-flush">
+                {% for cat in categories %}
+                    <li class="list-group-item d-flex justify-content-between">
+                        {{ cat.category }}
+                        <span class="badge bg-success rounded-pill">{{ cat.c_count }}</span>
+                    </li>
+                {% empty %}
+                    <li class="list-group-item text-muted">Нет данных</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
